@@ -60,45 +60,33 @@ function flipBoard() {
 
 // render board in browser
 function drawBoard() {
-  var chessBoard = '<table cellspacing="0"><tbody>'
-  let isCCBridge = document.getElementById('xiangqiboard').style.backgroundImage.includes('ccbridge');
-  
-  // board table
-  for (let row = 0; row < 14; row++) {
-    chessBoard += '<tr>'
-    for (let col = 0; col < 11; col++) {
-      let file, rank;
-      
-      // flip board
-      if (flip) {
-        file = 11 - 1 - col;
-        rank = 14 - 1 - row;
-      } else {
-        file = col;
-        rank = row;
-      }
-      
-      let square = rank * 11 + file;
-      let piece = engine.getPiece(square);
-      var pieceImage = '<img style="width: 44px" draggable="true"';
-      pieceImage += 'src="game/images/' + pieceFolder + '/' + piece + (isCCBridge ? '.png' : '.svg') + '"></img>';
+  // Wukong stores the board in an 11 x 14 mailbox. The playable board is
+  // only 9 x 10. Rendering the mailbox as a responsive table caused pieces
+  // to drift away from the intersections. Render exactly 90 playable cells.
+  var chessBoard = '<div class="board-grid">';
 
-      if (engine.squareToString(square) != 'xx') {
-        chessBoard +=
-          '<td align="center" id="' + square + '" ' +
-          ' onclick="tapPiece(this.id)" ' +
-          ' ondragstart="dragPiece(event, this.id)" ' +
-          ' ondragover="dragOver(event, this.id)" ' +
-          ' ondrop="dropPiece(event, this.id)">' + (piece ? pieceImage : '') + '</td>';
-      } else {
-        chessBoard += '<td aria-hidden="true"></td>';
-      }
+  for (let visualRank = 0; visualRank < 10; visualRank++) {
+    for (let visualFile = 0; visualFile < 9; visualFile++) {
+      const boardFile = flip ? (8 - visualFile) : visualFile;
+      const boardRank = flip ? (9 - visualRank) : visualRank;
+
+      // Mailbox coordinates: playable files are 1..9 and ranks are 2..11.
+      const square = (boardRank + 2) * 11 + (boardFile + 1);
+      const piece = engine.getPiece(square);
+      const pieceImage = piece
+        ? '<img draggable="true" src="game/images/' + pieceFolder + '/' + piece + '.svg" alt="">'
+        : '';
+
+      chessBoard +=
+        '<div class="board-square" id="' + square + '" ' +
+        'onclick="tapPiece(this.id)" ' +
+        'ondragstart="dragPiece(event, this.id)" ' +
+        'ondragover="dragOver(event, this.id)" ' +
+        'ondrop="dropPiece(event, this.id)">' + pieceImage + '</div>';
     }
-
-    chessBoard += '</tr>';
   }
 
-  chessBoard += '</tbody></table>';
+  chessBoard += '</div>';
   document.getElementById('xiangqiboard').innerHTML = chessBoard;
 }
 

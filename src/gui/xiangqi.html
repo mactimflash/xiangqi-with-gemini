@@ -31,12 +31,11 @@
       .app-brand{width:100%;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 2px 10px;text-align:left}
       .app-brand h1{margin:0;font-size:19px;font-weight:850}.app-brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
       .bot-pill{white-space:nowrap;background:#fff4cf;border:1px solid #e4c86b;color:#74530b;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}
-      .board-frame{width:min(100%,506px);aspect-ratio:11/14;position:relative;overflow:hidden;border-radius:10px;background:#d9ad68;border:1px solid #9c6c31;box-shadow:0 5px 16px rgba(67,43,17,.18)}
-      #xiangqiboard{position:absolute;inset:0;width:100%;height:100%;background:url(game/images/boards/board-ccbridge.png) center/100% 100% no-repeat}
-      #xiangqiboard table{width:100%;height:100%;border-collapse:collapse;table-layout:fixed;margin:0}
-      #xiangqiboard tr{height:calc(100% / 14)}
-      #xiangqiboard td{width:calc(100% / 11);height:calc(100% / 14);padding:0;position:relative;text-align:center;vertical-align:middle}
-      #xiangqiboard img{display:block;width:92%!important;height:92%;object-fit:contain;margin:auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));user-select:none}
+      .board-frame{width:min(100%,506px);aspect-ratio:9/10;position:relative;overflow:hidden;border-radius:10px;background:#d9ad68;border:1px solid #9c6c31;box-shadow:0 5px 16px rgba(67,43,17,.18)}
+      #xiangqiboard{position:absolute;inset:0;width:100%;height:100%;background:url(game/images/boards/board_light.svg) center/100% 100% no-repeat}
+      #xiangqiboard .board-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(10,1fr)}
+      #xiangqiboard .board-square{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;background-position:center;background-repeat:no-repeat;background-size:70% 70%}
+      #xiangqiboard img{display:block;width:82%!important;height:82%!important;object-fit:contain;margin:auto;filter:drop-shadow(0 1px 1px rgba(0,0,0,.22));user-select:none;z-index:2}
       .game-actions{width:min(100%,506px);display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
       .game-btn{border:1px solid #cdbba4;background:#fff;color:#3c3024;border-radius:10px;padding:10px 8px;font-weight:800;cursor:pointer}.game-btn.primary{background:var(--red);border-color:var(--red);color:#fff}.game-btn:active{transform:translateY(1px)}
       #coach-panel{min-width:0;position:sticky;top:12px}.coach-card{padding:15px;margin-bottom:12px;text-align:left}
