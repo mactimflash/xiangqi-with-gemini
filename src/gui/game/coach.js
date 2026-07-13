@@ -18,12 +18,12 @@
   // =========================
   // ULTRA STRENGTH CONFIG
   // =========================
-  const COACH_ONLY_WHEN_RED_TO_MOVE = false;
+  const COACH_ONLY_WHEN_RED_TO_MOVE = true;
   const COACH_BOT_NAME = 'Liudahua';
 
   // NOTE: 10s will freeze UI while searching (expected, because main thread).
   // Increase to 12–15 if you accept longer freezes for stronger hints.
-  const COACH_TIME_SECONDS = Math.max(0.8, Math.min(8, Number(localStorage.getItem('xiangqi_engine_seconds') || 2.5))); // mobile-friendly
+  const COACH_TIME_SECONDS = Math.max(0.5, Math.min(4, Number(localStorage.getItem('xiangqi_engine_seconds') || 1.4))); // fast hints for the human (Red) only
 
   // Allow deeper iterative deepening (engine should stop by time-control).
   const COACH_DEPTH_TIMED = 128;
@@ -375,7 +375,7 @@
     const ay = fromRect.top - frameRect.top + fromRect.height / 2;
     const bx = toRect.left - frameRect.left + toRect.width / 2;
     const by = toRect.top - frameRect.top + toRect.height / 2;
-    const radius = Math.max(17, Math.min(fromRect.width, fromRect.height) * 0.43);
+    const radius = Math.max(13, Math.min(fromRect.width, fromRect.height) * 0.38);
 
     const dx = bx - ax;
     const dy = by - ay;
@@ -398,8 +398,8 @@
     elBoardOverlay.setAttribute('viewBox', `0 0 ${width} ${height}`);
     elBoardOverlay.innerHTML = `
       <defs>
-        <marker id="coachArrowHead" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
-          <path d="M0,0 L10,5 L0,10 z" fill="#e13b2d"></path>
+        <marker id="coachArrowHead" markerWidth="7" markerHeight="7" refX="6.2" refY="3.5" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L7,3.5 L0,7 z" fill="#d94a3a"></path>
         </marker>
       </defs>
       <line class="hint-line" x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" marker-end="url(#coachArrowHead)"></line>

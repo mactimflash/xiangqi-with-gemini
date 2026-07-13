@@ -33,9 +33,9 @@
       .bot-pill{white-space:nowrap;background:#fff4cf;border:1px solid #e4c86b;color:#74530b;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}
       .board-frame{width:min(100%,506px);aspect-ratio:9/10;position:relative;overflow:hidden;border-radius:10px;background:#d9ad68;border:1px solid #9c6c31;box-shadow:0 5px 16px rgba(67,43,17,.18)}
       #coach-board-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:20;pointer-events:none;overflow:visible}
-      #coach-board-overlay .hint-line{stroke:#e13b2d;stroke-width:7;stroke-linecap:round;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
-      #coach-board-overlay .hint-source{fill:rgba(255,214,10,.18);stroke:#ffd60a;stroke-width:5;filter:drop-shadow(0 0 5px rgba(255,214,10,.9));animation:coachPulse 1.05s ease-in-out infinite}
-      #coach-board-overlay .hint-target{fill:rgba(25,190,110,.14);stroke:#18b66a;stroke-width:5;filter:drop-shadow(0 0 5px rgba(24,182,106,.75))}
+      #coach-board-overlay .hint-line{stroke:#d94a3a;stroke-width:3.2;stroke-linecap:round;opacity:.92;filter:drop-shadow(0 1px 1px rgba(0,0,0,.22))}
+      #coach-board-overlay .hint-source{fill:rgba(255,214,10,.10);stroke:#e7b900;stroke-width:3;filter:drop-shadow(0 0 3px rgba(255,214,10,.65));animation:coachPulse 1.15s ease-in-out infinite}
+      #coach-board-overlay .hint-target{fill:rgba(25,190,110,.08);stroke:#25a765;stroke-width:3;filter:drop-shadow(0 0 3px rgba(24,182,106,.48))}
       #coach-board-overlay .hint-label-bg{fill:rgba(34,28,22,.9);stroke:rgba(255,255,255,.72);stroke-width:1}
       #coach-board-overlay .hint-label{fill:#fff;font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
       @keyframes coachPulse{0%,100%{opacity:.72}50%{opacity:1}}
@@ -55,11 +55,11 @@
       #coach-minimap{display:none}#coach-legend{margin:10px 0 0;font-size:11px;font-weight:800;color:var(--red)}
       .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.analysis-box{border:1px solid #e0d4c4;background:#fff;border-radius:11px;padding:10px}.analysis-box h3{font-size:11px;margin:0 0 6px;color:#47392c}.analysis-box ul{font-size:11px;line-height:1.48;color:#665b51;margin:0;padding-left:16px}
       .curiosity-card{margin-top:9px;padding:10px;border-radius:11px;background:#fff6d7;border:1px solid #e9cf70;color:#654c0d;font-size:11px;line-height:1.45}
-      .action-row{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:11px}.primary-action,.secondary-action{border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer}.primary-action{background:var(--red);border:1px solid var(--red);color:#fff}.secondary-action{background:#fff;border:1px solid #cdbba4;color:#47392c}.primary-action:disabled{opacity:.6}
+      .primary-action,.secondary-action{border-radius:10px;padding:10px 12px;font-weight:800;cursor:pointer}.primary-action{background:var(--red);border:1px solid var(--red);color:#fff}.secondary-action{background:#fff;border:1px solid #cdbba4;color:#47392c}.primary-action:disabled{opacity:.6}
       .journey{display:flex;gap:8px}.journey-chip{flex:1;text-align:center;border:1px solid #e0d4c4;border-radius:10px;padding:8px}.journey-chip strong{display:block;color:var(--green)}.journey-chip small,.privacy-note,#learning-stats{font-size:10px;color:var(--muted)}
       #ai-toast{position:fixed;left:50%;bottom:18px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#2d251d;color:#fff;padding:9px 13px;border-radius:999px;font-weight:800;transition:.2s;z-index:1000;font-size:12px}#ai-toast.show{opacity:1;transform:translate(-50%,0)}
       .hidden-engine-controls{display:none!important}
-      @media(max-width:820px){body{padding:7px}#layout{display:flex;flex-direction:column;gap:10px}#main{width:100%;padding:8px;border-radius:13px;box-shadow:none}.coach-card{border-radius:13px;padding:11px;box-shadow:none}#coach-panel{position:static;width:100%}.app-brand h1{font-size:17px}.app-brand p{font-size:10px}.bot-pill{font-size:9px;padding:5px 7px}.board-frame{width:min(100%,506px)}.game-actions{gap:6px}.game-btn{padding:9px 4px;font-size:12px}.analysis-grid{grid-template-columns:1fr}.score-strip{gap:5px}.metric{padding:7px 4px}#ai-headline{font-size:16px}#ai-best-move{font-size:27px}.action-row{grid-template-columns:1fr}.secondary-action{width:100%}}
+      @media(max-width:820px){body{padding:7px}#layout{display:flex;flex-direction:column;gap:10px}#main{width:100%;padding:8px;border-radius:13px;box-shadow:none}.coach-card{border-radius:13px;padding:11px;box-shadow:none}#coach-panel{position:static;width:100%}.app-brand h1{font-size:17px}.app-brand p{font-size:10px}.bot-pill{font-size:9px;padding:5px 7px}.board-frame{width:min(100%,506px)}.game-actions{gap:6px}.game-btn{padding:9px 4px;font-size:12px}.analysis-grid{grid-template-columns:1fr}.score-strip{gap:5px}.metric{padding:7px 4px}#ai-headline{font-size:16px}#ai-best-move{font-size:27px}.secondary-action{width:100%}}
       @media(max-width:380px){.app-brand p{display:none}.score-strip{grid-template-columns:1fr 1fr}.metric:last-child{grid-column:1/-1}.bot-pill{max-width:135px;overflow:hidden;text-overflow:ellipsis}.coach-top{display:block}#ai-status{display:inline-block;margin-top:7px}}
     </style>
   </head>
@@ -88,11 +88,11 @@
       <aside id="coach-panel" aria-label="Trợ lý AI">
         <section class="coach-card">
           <div class="coach-top">
-            <div><div class="eyebrow">Wukong + Gemini</div><h2 id="ai-headline">Đang chuẩn bị thế cờ</h2></div>
+            <div><div class="eyebrow">Bình luận trực tiếp</div><h2 id="ai-headline">Đang quan sát thế trận</h2></div>
             <span id="ai-status">Khởi tạo…</span>
           </div>
-          <div class="move-hero"><div><div class="eyebrow">AI gợi ý bạn</div><div id="ai-best-move">Đang tìm nước phù hợp…</div></div><span id="ai-confidence">Engine</span></div>
-          <p id="ai-summary">AI sẽ chỉ rõ quân cần đi và giải thích bằng lời đơn giản, dễ làm theo.</p>
+          <div class="move-hero"><div><div class="eyebrow">Nước nên đi ngay</div><div id="ai-best-move">Đang tìm nước phù hợp…</div></div><span id="ai-confidence">Engine</span></div>
+          <p id="ai-summary">Mỗi khi thế cờ thay đổi, AI sẽ tự bình luận và chỉ dẫn ngay — bạn không cần bấm thêm nút nào.</p>
           <div class="score-strip">
             <div class="metric"><b id="ai-score">—</b><span>Điểm kế hoạch</span><div class="score-track"><div id="ai-score-bar"></div></div></div>
             <div class="metric"><b id="ai-momentum">cân bằng</b><span>Thế trận</span></div>
@@ -101,12 +101,11 @@
           <div id="coach-minimap"><canvas id="coach-canvas"></canvas><div id="coach-move-label">…</div></div>
           <div id="coach-legend">Trạng thái: …</div>
           <div class="analysis-grid">
-            <div class="analysis-box"><h3>Vì sao nên đi</h3><ul id="ai-strengths"><li>Đang chờ phân tích.</li></ul></div>
-            <div class="analysis-box"><h3>Cần đề phòng</h3><ul id="ai-risks"><li>Kiểm tra phản đòn trực tiếp.</li></ul></div>
-            <div class="analysis-box" style="grid-column:1/-1"><h3>Ba bước tiếp theo</h3><ul id="ai-plan"><li>Đi đúng nước được gợi ý.</li><li>Quan sát Liu DaHua đáp trả.</li><li>Nhận gợi ý mới.</li></ul></div>
+            <div class="analysis-box"><h3>Điểm hay của nước này</h3><ul id="ai-strengths"><li>Đang chờ phân tích.</li></ul></div>
+            <div class="analysis-box"><h3>Liu DaHua có thể đáp trả</h3><ul id="ai-risks"><li>Kiểm tra phản đòn trực tiếp.</li></ul></div>
+            <div class="analysis-box" style="grid-column:1/-1"><h3>Kế hoạch dễ làm theo</h3><ul id="ai-plan"><li>Đi đúng nước được gợi ý.</li><li>Quan sát Liu DaHua đáp trả.</li><li>Nhận gợi ý mới.</li></ul></div>
           </div>
           <div class="curiosity-card">🔎 <strong>Điều đáng chờ:</strong> <span id="ai-curiosity">Nước đáp trả tiếp theo sẽ hé lộ kế hoạch của Liu DaHua.</span></div>
-          <div class="action-row"><button id="gemini-analyze" class="primary-action">Phân tích nước này</button><button id="copy-guidance" class="secondary-action">Sao chép</button></div>
           <div class="hidden-engine-controls">
             <input id="worker-url"><input id="gemini-auto" type="checkbox" checked><button id="gemini-save"></button>
             <div id="ai-settings"></div><button id="ai-settings-toggle"></button>
@@ -126,13 +125,13 @@
     <script src="game/bots.js"></script>
 
     <!-- User input handling -->
-    <script src="game/xiangqi.js?v=20260713-2"></script>
+    <script src="game/xiangqi.js?v=20260713-3"></script>
 
     <!-- Realtime coaching overlay -->
-    <script src="game/coach.js?v=20260713-2"></script>
+    <script src="game/coach.js?v=20260713-3"></script>
 
     <!-- Gemini explanations and local learning -->
-    <script src="game/ai-coach.js?v=20260713-2"></script>
+    <script src="game/ai-coach.js?v=20260713-4"></script>
 
     <div id="ai-toast" role="status"></div>
   </body>
