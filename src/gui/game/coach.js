@@ -419,6 +419,8 @@
 
   let lastBestMoveUcci = '';
   let lastPositionKey = '';
+  let lastObservedKey = '';
+  let analysisGeneration = 0;
 
   function render(bestmoveUcci) {
     // Update phase status FIRST (fast + no need to wait for RAF)
@@ -447,7 +449,11 @@
   }
 
   function analyzeNow(reason) {
-    if (!enabled || busy) return;
+    if (!enabled) return;
+    if (busy) {
+      scheduleAnalyze('retry');
+      return;
+    }
 
     // Position-change guard
     const key = getPositionKey();
@@ -465,17 +471,25 @@
     busy = true;
     lastAnalyzeTs = now;
     lastPositionKey = key;
+    const generation = ++analysisGeneration;
 
     const run = () => {
       try {
         const side = window.engine.getSide ? window.engine.getSide() : 0; // 0=RED, 1=BLACK
 
-        if (COACH_ONLY_WHEN_RED_TO_MOVE && window.engine.COLOR && side === window.engine.COLOR.BLACK) {
+        if (COACH_ONLY_WHEN_RED_TO_MOVE && side === 1) {
+          lastBestMoveUcci = '';
           render('');
           return;
         }
 
         const picked = pickBestMoveUltra();
+        // Ignore a result calculated for a position that has already changed.
+        const currentKey = getPositionKey();
+        if (generation !== analysisGeneration || currentKey !== key || (window.engine.getSide && window.engine.getSide() !== 0)) {
+          scheduleAnalyze('position-changed');
+          return;
+        }
         const bestMove = picked && picked.move;
         const bestUcci = bestMove ? ucciFromMove(bestMove) : '';
         lastBestMoveUcci = bestUcci;
@@ -504,6 +518,8 @@
         if (elMoveLabel) elMoveLabel.textContent = '…';
       } finally {
         busy = false;
+        const currentKey = getPositionKey();
+        if (currentKey !== key) scheduleAnalyze('after-busy');
       }
     };
 
@@ -564,6 +580,27 @@
   resizeCanvas();
   render('');
   scheduleAnalyze('init');
+
+  // Reliable position watcher: some GUI paths do not call updatePgn, and rapid bot moves
+  // can race with an in-flight analysis. Watch the actual engine position instead.
+  lastObservedKey = getPositionKey();
+  window.setInterval(() => {
+    if (!enabled || !window.engine) return;
+    const key = getPositionKey();
+    if (!key || key === lastObservedKey) return;
+    lastObservedKey = key;
+    analysisGeneration++;
+    const side = window.engine.getSide ? window.engine.getSide() : 0;
+    if (side === 1) {
+      lastBestMoveUcci = '';
+      render('');
+    } else {
+      // Reset guards so every new player turn receives a fresh suggestion.
+      lastPositionKey = '';
+      lastAnalyzeTs = 0;
+      scheduleAnalyze('position-watch');
+    }
+  }, 220);
 
   window.addEventListener('resize', () => {
     resizeCanvas();
