@@ -63,3 +63,8 @@ Quy ước `result`: `1-0`, `0-1`, `1/2-1/2`, hoặc `*` khi chưa rõ.
 ## Giấy phép và dữ liệu
 
 Source ứng dụng có thể dùng theo MIT. Dữ liệu từng nguồn có điều khoản riêng; phải kiểm tra quyền tái sử dụng trước khi nhập hoặc phân phối lại dữ liệu bên thứ ba.
+
+
+## Typography
+
+Giao diện sử dụng **Be Vietnam Pro** từ Google Fonts. Tiêu đề dùng trọng lượng 800 (ExtraBold tương đương), nội dung dùng 400–600 để dễ đọc tiếng Việt trên mobile. Không cần đóng gói file font trong repo.
