@@ -1,0 +1,20 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#17120d"><title>Danh Cục Kỳ Truyện</title><link rel="stylesheet" href="/assets/app.css?v=1"></head><body>
+<header class="topbar"><div><span class="eyebrow">DANH CỤC KỲ TRUYỆN</span><h1>Đọc một ván cờ như đọc một câu chuyện</h1><p>Khám phá ý đồ, bước ngoặt và bài học chiến thuật qua từng nước.</p></div><button id="libraryBtn" class="ghost">Chọn ván</button></header>
+<main class="shell">
+<section class="stage">
+<div class="game-meta"><div><b id="gameTitle">Đang tải…</b><span id="gameEvent"></span></div><div class="players"><span class="red-dot"></span><span id="redPlayer">Đỏ</span><small>vs</small><span id="blackPlayer">Đen</span><span class="black-dot"></span></div></div>
+<div class="board-wrap"><div id="board" class="board" aria-label="Bàn cờ tướng"></div><svg id="overlay" class="overlay" viewBox="0 0 900 1000" aria-hidden="true"></svg></div>
+<div class="controls"><button id="prev" class="secondary">← Nước trước</button><button id="next" class="primary">Nước tiếp theo →</button><button id="restart" class="secondary icon-btn" title="Xem lại">↻</button></div>
+<div class="progress-row"><span id="moveCount">Bắt đầu</span><div class="progress"><i id="progressBar"></i></div><span id="sideTurn">Đỏ đi</span></div>
+</section>
+<aside class="story-panel">
+<div class="chapter-tag" id="chapterTag">LỜI MỞ ĐẦU</div><h2 id="headline">Một cuộc đấu trí đang chờ được mở ra</h2><p id="narration" class="lead">Chọn một ván rồi bấm “Nước tiếp theo”. Mỗi nước cờ sẽ mở thêm một đoạn của câu chuyện.</p>
+<div class="insight-grid"><article><h3>Ý đồ vừa hé lộ</h3><p id="intent">Hai bên chưa bộc lộ kế hoạch.</p></article><article><h3>Thế khó của đối thủ</h3><p id="dilemma">Hãy quan sát cách hai bên bố trí lực lượng.</p></article></div>
+<article class="lesson"><h3>Bài học đáng nhớ</h3><ul id="lessons"><li>Đoán nước tiếp theo trước khi bấm để luyện tư duy.</li></ul></article>
+<div class="hook"><span>Tiếp theo</span><p id="nextHook">Ai sẽ là người giành quyền chủ động trước?</p></div>
+<div id="ending" class="ending hidden"><span class="ending-label">KẾT CỤC</span><h3 id="endingTitle"></h3><p id="endingText"></p><small id="endingConfidence"></small></div>
+<div class="ai-state" id="aiState">Sẵn sàng kể chuyện</div>
+</aside>
+</main>
+<dialog id="library"><form method="dialog" class="library-card"><div class="library-head"><div><span class="eyebrow">THƯ VIỆN</span><h2>Chọn danh cục muốn khám phá</h2></div><button class="close">×</button></div><div class="filters"><input id="search" placeholder="Tìm kỳ thủ hoặc giải đấu…"><select id="sourceFilter"><option value="all">Tất cả nguồn</option></select></div><div id="gameList" class="game-list"></div></form></dialog>
+<script type="module" src="/src/app.js?v=1"></script></body></html>
