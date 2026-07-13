@@ -4,6 +4,7 @@
 
   const STORAGE_KEY = 'xiangqi_ai_worker_coach_v2';
   const MAX_HISTORY = 80;
+  const WORKER_URL = 'https://cotuong.starlinksatellitewifi.workers.dev';
   const state = loadState();
   let latestCoach = null;
   let lastCommentedPosition = '';
@@ -53,7 +54,7 @@
   }
 
   function defaults() {
-    return { settings: { workerUrl: '', autoAnalyze: true }, suggestions: [], followed: 0, deviated: 0, streak: 0, bestStreak: 0, xp: 0, lastMoveCount: 0 };
+    return { settings: { workerUrl: WORKER_URL, autoAnalyze: true }, suggestions: [], followed: 0, deviated: 0, streak: 0, bestStreak: 0, xp: 0, lastMoveCount: 0 };
   }
   function loadState() {
     try {
@@ -62,23 +63,22 @@
     } catch (_) { return defaults(); }
   }
   function persist() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch (_) {} }
-  function hydrateSettings() { els.workerUrl.value = state.settings.workerUrl || ''; els.auto.checked = !!state.settings.autoAnalyze; }
+  function hydrateSettings() { state.settings.workerUrl = WORKER_URL; if (els.workerUrl) els.workerUrl.value = WORKER_URL; if (els.auto) els.auto.checked = true; persist(); setStatus('AI sẵn sàng', 'ready'); }
   function bindUi() {
-    els.save.addEventListener('click', saveSettings);
+    if (els.save) els.save.addEventListener('click', saveSettings);
     els.analyze.addEventListener('click', () => analyzeWithAI(true));
     els.clear.addEventListener('click', clearLearning);
-    els.settingsToggle.addEventListener('click', () => {
+    if (els.settingsToggle && els.settings) els.settingsToggle.addEventListener('click', () => {
       const open = els.settings.classList.toggle('is-open');
       els.settingsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     els.copy.addEventListener('click', copyGuidance);
   }
   function saveSettings() {
-    state.settings.workerUrl = normalizeUrl(els.workerUrl.value);
-    state.settings.autoAnalyze = !!els.auto.checked;
+    state.settings.workerUrl = WORKER_URL;
+    state.settings.autoAnalyze = true;
     persist();
-    toast(state.settings.workerUrl ? 'Đã kết nối địa chỉ Worker.' : 'Hãy nhập URL Worker.');
-    setStatus(state.settings.workerUrl ? 'AI Worker sẵn sàng' : 'Chưa cấu hình Worker', state.settings.workerUrl ? 'ready' : 'warn');
+    setStatus('AI sẵn sàng', 'ready');
   }
   function clearLearning() {
     state.suggestions = []; state.followed = 0; state.deviated = 0; state.streak = 0; state.bestStreak = 0; state.xp = 0; state.lastMoveCount = 0;
@@ -143,13 +143,12 @@
   }
 
   async function analyzeWithAI(manual) {
-    saveSettings();
-    if (!state.settings.workerUrl) { els.settings.classList.add('is-open'); toast('Nhập URL Worker trước.'); return; }
+    state.settings.workerUrl = WORKER_URL;
     if (!latestCoach || !latestCoach.move) { toast('Wukong chưa có nước để phân tích.'); return; }
     if (requestController) requestController.abort();
     requestController = new AbortController(); setLoading(true);
     try {
-      const response = await fetch(state.settings.workerUrl + '/api/analyze', {
+      const response = await fetch(WORKER_URL + '/api/analyze', {
         method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(buildPayload()), signal:requestController.signal
       });
       const data = await response.json().catch(() => ({}));

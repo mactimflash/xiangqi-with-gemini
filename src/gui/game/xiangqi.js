@@ -84,14 +84,14 @@ function drawBoard() {
       pieceImage += 'src="game/images/' + pieceFolder + '/' + piece + (isCCBridge ? '.png' : '.svg') + '"></img>';
 
       if (engine.squareToString(square) != 'xx') {
-        chessBoard += 
-          '<td align="center" id="' + square + 
-          '" width="' + CELL_WIDTH + 'px" height="' + CELL_HEIGHT +  'px" ' +
-          ' onclick="tapPiece(this.id)" ' + 
+        chessBoard +=
+          '<td align="center" id="' + square + '" ' +
+          ' onclick="tapPiece(this.id)" ' +
           ' ondragstart="dragPiece(event, this.id)" ' +
-          ' ondragover="dragOver(event, this.id)"'+
-          ' ondrop="dropPiece(event, this.id)">' + (piece ? pieceImage : '') +
-          '</td>';
+          ' ondragover="dragOver(event, this.id)" ' +
+          ' ondrop="dropPiece(event, this.id)">' + (piece ? pieceImage : '') + '</td>';
+      } else {
+        chessBoard += '<td aria-hidden="true"></td>';
       }
     }
 
