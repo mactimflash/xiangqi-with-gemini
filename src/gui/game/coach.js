@@ -362,9 +362,7 @@
     elLegend.style.letterSpacing = '0.6px';
 
     // Move label (minimal)
-    elMoveLabel.textContent = bestmoveUcci
-      ? bestmoveUcci.slice(0, 2) + ' → ' + bestmoveUcci.slice(2, 4)
-      : '…';
+    elMoveLabel.textContent = bestmoveUcci ? 'Đi quân được khoanh theo mũi tên' : 'Đang tìm nước phù hợp…';
 
     // Draw minimap on next frame
     requestAnimationFrame(() => {

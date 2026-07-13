@@ -115,14 +115,50 @@
   }
   function renderEngineGuidance(detail) {
     const isRed = Number(detail.side) === 0;
-    els.move.textContent = detail.move ? formatMove(detail.move) : 'Đang tính…';
+    els.move.textContent = detail.move ? describeMove(detail.move) : 'Đang tìm nước phù hợp…';
     els.headline.textContent = isRed ? 'Nước tiếp theo để gây khó cho Liu DaHua' : 'Liu DaHua đang chuẩn bị phản đòn';
     els.summary.textContent = isRed ? 'Wukong đã chọn một nước hợp lệ. Nhấn phân tích để biết vì sao nước này đáng đi.' : 'Hãy quan sát: phản ứng của bot sẽ hé lộ kế hoạch tiếp theo.';
     els.confidence.textContent = detail.source === 'book' ? 'Khai cuộc' : 'Wukong';
     els.curiosity.textContent = isRed ? 'Đi theo mũi tên, rồi AI sẽ chấm xem bạn có giữ được thế chủ động.' : 'Nước đáp trả sắp xuất hiện…';
     setStatus('Wukong · ' + (detail.phaseLabel || detail.phase || 'đang phân tích'), 'ready');
   }
-  function formatMove(move) { return !move || move.length < 4 ? (move || '—') : move.slice(0,2) + ' → ' + move.slice(2,4); }
+  function describeMove(move) {
+    if (!move || move.length < 4) return 'Hãy chờ AI hướng dẫn';
+    try {
+      const from = move.slice(0, 2);
+      const to = move.slice(2, 4);
+      const sourceSquare = findSquare(from);
+      const piece = sourceSquare === null ? 0 : window.engine.getPiece(sourceSquare);
+      const names = { 1:'Tốt', 2:'Sĩ', 3:'Tượng', 4:'Mã', 5:'Pháo', 6:'Xe', 7:'Tướng', 9:'Tốt', 10:'Sĩ', 11:'Tượng', 12:'Mã', 13:'Pháo', 14:'Xe', 15:'Tướng' };
+      const pieceName = names[piece] || 'quân được đánh dấu';
+      const ff = from.charCodeAt(0) - 97, tf = to.charCodeAt(0) - 97;
+      const fr = Number(from[1]), tr = Number(to[1]);
+      const horizontal = ff !== tf && fr === tr;
+      const vertical = ff === tf && fr !== tr;
+      const distance = Math.max(Math.abs(tf - ff), Math.abs(tr - fr));
+      let action = 'di chuyển theo mũi tên';
+      if (horizontal) {
+        const towardCenter = Math.abs(tf - 4) < Math.abs(ff - 4);
+        action = towardCenter ? 'đưa vào gần trung tâm' : 'chuyển sang cánh bên';
+      } else if (vertical) {
+        const isRedPiece = piece > 0 && piece < 8;
+        const forward = isRedPiece ? tr > fr : tr < fr;
+        action = forward ? 'tiến lên' : 'lùi về';
+        if (distance > 1) action += ' ' + distance + ' bước';
+      } else {
+        action = 'đi theo đường chéo được đánh dấu';
+      }
+      const sideHint = (pieceName === 'Pháo' || pieceName === 'Xe' || pieceName === 'Mã')
+        ? (ff <= 3 ? ' bên trái' : ff >= 5 ? ' bên phải' : '') : '';
+      return pieceName + sideHint + ' ' + action;
+    } catch (_) {
+      return 'Đi quân đang được khoanh theo mũi tên';
+    }
+  }
+  function findSquare(coord) {
+    for (let sq = 0; sq < 154; sq++) if (window.engine.squareToString(sq) === coord) return sq;
+    return null;
+  }
 
   function boardSnapshot() {
     const pieceChars = ['.', 'P', 'A', 'B', 'N', 'C', 'R', 'K', 'p', 'a', 'b', 'n', 'c', 'r', 'k'];
@@ -166,7 +202,7 @@
     return {
       task:'Bình luận nước Wukong để người chơi Đỏ từng bước vượt qua bot Liu DaHua.',
       output_schema:{ headline:'tối đa 12 từ', explanation:'2-3 câu', strengths:['2-3 ý'], risks:['2-3 ý'], next_plan:['3 bước'], score:'integer 0-100 đánh giá chất lượng kế hoạch, không phải điểm engine', momentum:'bất lợi|cân bằng|chủ động', curiosity:'1 câu gợi tò mò hợp lý', confidence:'thấp|trung bình|cao' },
-      rules:['Giữ nguyên best_move của Wukong','Không bịa độ sâu hoặc phần trăm thắng','Không hứa chắc chắn chiến thắng','Ngắn gọn, dễ làm theo trên điện thoại','Liu DaHua là bot profile trong repo'],
+      rules:['Giữ nguyên best_move của Wukong','Tuyệt đối không hiển thị hoặc nhắc lại tọa độ kiểu h2, e2, h2-e2 hay ký hiệu UCCI','Chỉ dùng lời nói gần gũi như Pháo phải bình vào giữa, Mã trái tiến lên, đi quân được khoanh theo mũi tên','Không bịa độ sâu hoặc phần trăm thắng','Không hứa chắc chắn chiến thắng','Ngắn gọn, dễ làm theo trên điện thoại','Liu DaHua là bot profile trong repo'],
       position:{ board:boardSnapshot(), fen:latestCoach.fen || '', side_to_move:Number(latestCoach.side)===0?'red/user':'black/bot', phase:latestCoach.phase || '', best_move:latestCoach.move, pv:latestCoach.pv || '', engine_score:typeof latestCoach.score==='number'?latestCoach.score:null },
       player_learning:learningSummary()
     };
@@ -187,7 +223,7 @@
   function setLoading(loading) { els.analyze.disabled = loading; els.analyze.textContent = loading ? 'AI đang suy nghĩ…' : 'AI phân tích nước này'; if (loading) setStatus('Đang hỏi Gemini qua Worker', 'loading'); }
   function setStatus(text, kind) { els.status.textContent = text; els.status.dataset.kind = kind || ''; }
   async function copyGuidance() {
-    const text = [els.headline.textContent, 'Nước: '+els.move.textContent, 'Điểm kế hoạch: '+els.score.textContent, els.summary.textContent, 'Kế hoạch: '+Array.from(els.plan.querySelectorAll('li')).map(x=>x.textContent).join(' → ')].join('\n');
+    const text = [els.headline.textContent, 'Gợi ý: '+els.move.textContent, 'Điểm kế hoạch: '+els.score.textContent, els.summary.textContent, 'Kế hoạch: '+Array.from(els.plan.querySelectorAll('li')).map(x=>x.textContent).join(' → ')].join('\n');
     try { await navigator.clipboard.writeText(text); toast('Đã sao chép hướng dẫn.'); } catch (_) { toast('Không thể sao chép.'); }
   }
   function toast(message) { els.toast.textContent = message; els.toast.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>els.toast.classList.remove('show'),2200); }
