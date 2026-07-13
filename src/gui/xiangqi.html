@@ -32,6 +32,13 @@
       .app-brand h1{margin:0;font-size:19px;font-weight:850}.app-brand p{margin:3px 0 0;color:var(--muted);font-size:12px}
       .bot-pill{white-space:nowrap;background:#fff4cf;border:1px solid #e4c86b;color:#74530b;padding:6px 9px;border-radius:999px;font-size:11px;font-weight:800}
       .board-frame{width:min(100%,506px);aspect-ratio:9/10;position:relative;overflow:hidden;border-radius:10px;background:#d9ad68;border:1px solid #9c6c31;box-shadow:0 5px 16px rgba(67,43,17,.18)}
+      #coach-board-overlay{position:absolute;inset:0;width:100%;height:100%;z-index:20;pointer-events:none;overflow:visible}
+      #coach-board-overlay .hint-line{stroke:#e13b2d;stroke-width:7;stroke-linecap:round;filter:drop-shadow(0 2px 2px rgba(0,0,0,.35))}
+      #coach-board-overlay .hint-source{fill:rgba(255,214,10,.18);stroke:#ffd60a;stroke-width:5;filter:drop-shadow(0 0 5px rgba(255,214,10,.9));animation:coachPulse 1.05s ease-in-out infinite}
+      #coach-board-overlay .hint-target{fill:rgba(25,190,110,.14);stroke:#18b66a;stroke-width:5;filter:drop-shadow(0 0 5px rgba(24,182,106,.75))}
+      #coach-board-overlay .hint-label-bg{fill:rgba(34,28,22,.9);stroke:rgba(255,255,255,.72);stroke-width:1}
+      #coach-board-overlay .hint-label{fill:#fff;font-size:14px;font-weight:800;text-anchor:middle;dominant-baseline:middle}
+      @keyframes coachPulse{0%,100%{opacity:.72}50%{opacity:1}}
       #xiangqiboard{position:absolute;inset:0;width:100%;height:100%;background:url(game/images/boards/board_light.svg) center/100% 100% no-repeat}
       #xiangqiboard .board-grid{position:absolute;inset:0;display:grid;grid-template-columns:repeat(9,1fr);grid-template-rows:repeat(10,1fr)}
       #xiangqiboard .board-square{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;background-position:center;background-repeat:no-repeat;background-size:70% 70%}
@@ -64,7 +71,7 @@
           <div><h1>Cờ Tướng AI</h1><p>Đi theo Wukong · hiểu nước đi cùng Gemini</p></div>
           <div class="bot-pill">Đấu với Liu DaHua</div>
         </header>
-        <div class="board-frame"><div id="xiangqiboard" aria-label="Bàn cờ tướng"></div></div>
+        <div class="board-frame"><div id="xiangqiboard" aria-label="Bàn cờ tướng"></div><svg id="coach-board-overlay" aria-hidden="true"></svg></div>
         <div class="game-actions">
           <button class="game-btn primary" onclick="newGame();">Ván mới</button>
           <button class="game-btn" onclick="userTime=0;think();">Bot đi</button>

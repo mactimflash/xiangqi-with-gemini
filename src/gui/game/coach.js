@@ -51,6 +51,7 @@
   const elCanvas = document.getElementById('coach-canvas');
   const elMoveLabel = document.getElementById('coach-move-label');
   const elLegend = document.getElementById('coach-legend');
+  const elBoardOverlay = document.getElementById('coach-board-overlay');
 
   if (!elMinimap || !elCanvas || !elMoveLabel || !elLegend) {
     console.warn('[Coach] UI not found. coach disabled.');
@@ -342,6 +343,73 @@
     ctx.restore();
   }
 
+
+  function clearBoardHint() {
+    if (elBoardOverlay) elBoardOverlay.innerHTML = '';
+  }
+
+  function renderBoardHint(ucci) {
+    if (!elBoardOverlay || !ucci || ucci.length < 4) {
+      clearBoardHint();
+      return;
+    }
+
+    const fromCoord = ucci.slice(0, 2);
+    const toCoord = ucci.slice(2, 4);
+    const fromSquare = coordToSquare[fromCoord];
+    const toSquare = coordToSquare[toCoord];
+    const fromEl = document.getElementById(String(fromSquare));
+    const toEl = document.getElementById(String(toSquare));
+    const frame = elBoardOverlay.parentElement;
+    if (!fromEl || !toEl || !frame) {
+      clearBoardHint();
+      return;
+    }
+
+    const frameRect = frame.getBoundingClientRect();
+    const fromRect = fromEl.getBoundingClientRect();
+    const toRect = toEl.getBoundingClientRect();
+    const width = Math.max(1, frameRect.width);
+    const height = Math.max(1, frameRect.height);
+    const ax = fromRect.left - frameRect.left + fromRect.width / 2;
+    const ay = fromRect.top - frameRect.top + fromRect.height / 2;
+    const bx = toRect.left - frameRect.left + toRect.width / 2;
+    const by = toRect.top - frameRect.top + toRect.height / 2;
+    const radius = Math.max(17, Math.min(fromRect.width, fromRect.height) * 0.43);
+
+    const dx = bx - ax;
+    const dy = by - ay;
+    const distance = Math.max(1, Math.hypot(dx, dy));
+    const ux = dx / distance;
+    const uy = dy / distance;
+    const startX = ax + ux * radius * 0.75;
+    const startY = ay + uy * radius * 0.75;
+    const endX = bx - ux * radius * 0.75;
+    const endY = by - uy * radius * 0.75;
+
+    const label = 'ĐI QUÂN NÀY';
+    const labelW = Math.min(122, width * 0.30);
+    const labelH = 27;
+    let labelX = ax;
+    let labelY = ay - radius - 20;
+    if (labelY < 16) labelY = ay + radius + 20;
+    labelX = Math.max(labelW / 2 + 4, Math.min(width - labelW / 2 - 4, labelX));
+
+    elBoardOverlay.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    elBoardOverlay.innerHTML = `
+      <defs>
+        <marker id="coachArrowHead" markerWidth="12" markerHeight="12" refX="9" refY="5" orient="auto" markerUnits="strokeWidth">
+          <path d="M0,0 L10,5 L0,10 z" fill="#e13b2d"></path>
+        </marker>
+      </defs>
+      <line class="hint-line" x1="${startX}" y1="${startY}" x2="${endX}" y2="${endY}" marker-end="url(#coachArrowHead)"></line>
+      <circle class="hint-source" cx="${ax}" cy="${ay}" r="${radius}"></circle>
+      <circle class="hint-target" cx="${bx}" cy="${by}" r="${radius * 0.86}"></circle>
+      <rect class="hint-label-bg" x="${labelX-labelW/2}" y="${labelY-labelH/2}" width="${labelW}" height="${labelH}" rx="${labelH/2}"></rect>
+      <text class="hint-label" x="${labelX}" y="${labelY+1}">${label}</text>
+    `;
+  }
+
   // ---- coaching loop ----
   let enabled = true;
   let busy = false;
@@ -362,7 +430,8 @@
     elLegend.style.letterSpacing = '0.6px';
 
     // Move label (minimal)
-    elMoveLabel.textContent = bestmoveUcci ? 'Đi quân được khoanh theo mũi tên' : 'Đang tìm nước phù hợp…';
+    elMoveLabel.textContent = bestmoveUcci ? 'Quân cần đi được khoanh vàng, ô đến khoanh xanh' : 'Đang tìm nước phù hợp…';
+    requestAnimationFrame(() => renderBoardHint(bestmoveUcci));
 
     // Draw minimap on next frame
     requestAnimationFrame(() => {
@@ -476,6 +545,16 @@
     window.newGame = function () {
       const r = originalNewGame.apply(this, arguments);
       scheduleAnalyze('new');
+      return r;
+    };
+  }
+
+
+  const originalFlipBoard = window.flipBoard;
+  if (typeof originalFlipBoard === 'function') {
+    window.flipBoard = function () {
+      const r = originalFlipBoard.apply(this, arguments);
+      requestAnimationFrame(() => render(lastBestMoveUcci || ''));
       return r;
     };
   }
