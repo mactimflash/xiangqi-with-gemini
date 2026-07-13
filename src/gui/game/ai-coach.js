@@ -22,7 +22,15 @@
     curiosity: $('ai-curiosity'), streak: $('ai-streak'), xp: $('ai-xp'), level: $('ai-level')
   };
 
-  if (!els.status || typeof window.engine === 'undefined') return;
+
+  const setText = (el, value) => { if (el) el.textContent = value; };
+  const setHtml = (el, value) => { if (el) el.innerHTML = value; };
+  const required = ['status','headline','summary','strengths','risks','plan','move','confidence','analyze','score','scoreBar','momentum','curiosity','streak','xp','level'];
+  const missing = required.filter((key) => !els[key]);
+  if (typeof window.engine === 'undefined' || missing.length) {
+    console.warn('[AI Coach] Disabled because required UI is missing:', missing);
+    return;
+  }
   hydrateSettings(); renderLearningStats(); bindUi(); renderProgress();
 
   window.addEventListener('xiangqi:coach-result', (event) => {
@@ -66,13 +74,13 @@
   function hydrateSettings() { state.settings.workerUrl = WORKER_URL; if (els.workerUrl) els.workerUrl.value = WORKER_URL; if (els.auto) els.auto.checked = true; persist(); setStatus('AI sẵn sàng', 'ready'); }
   function bindUi() {
     if (els.save) els.save.addEventListener('click', saveSettings);
-    els.analyze.addEventListener('click', () => analyzeWithAI(true));
-    els.clear.addEventListener('click', clearLearning);
+    if (els.analyze) els.analyze.addEventListener('click', () => analyzeWithAI(true));
+    if (els.clear) els.clear.addEventListener('click', clearLearning);
     if (els.settingsToggle && els.settings) els.settingsToggle.addEventListener('click', () => {
       const open = els.settings.classList.toggle('is-open');
       els.settingsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
-    els.copy.addEventListener('click', copyGuidance);
+    if (els.copy) els.copy.addEventListener('click', copyGuidance);
   }
   function saveSettings() {
     state.settings.workerUrl = WORKER_URL;
@@ -104,22 +112,22 @@
   function renderLearningStats() {
     const total = state.followed + state.deviated;
     const rate = total ? Math.round(state.followed / total * 100) : 0;
-    els.stats.innerHTML = '<strong>' + total + '</strong> lượt · theo gợi ý <strong>' + rate + '%</strong> · chuỗi tốt nhất <strong>' + state.bestStreak + '</strong>';
+    if (els.stats) els.stats.innerHTML = '<strong>' + total + '</strong> lượt · theo gợi ý <strong>' + rate + '%</strong> · chuỗi tốt nhất <strong>' + state.bestStreak + '</strong>';
   }
   function renderProgress() {
     const level = Math.floor(state.xp / 100) + 1;
     const within = state.xp % 100;
-    els.streak.textContent = state.streak;
-    els.xp.textContent = within + '/100 XP';
-    els.level.textContent = 'Cấp ' + level;
+    setText(els.streak, state.streak);
+    setText(els.xp, within + '/100 XP');
+    setText(els.level, 'Cấp ' + level);
   }
   function renderEngineGuidance(detail) {
     const isRed = Number(detail.side) === 0;
-    els.move.textContent = detail.move ? describeMove(detail.move) : 'Đang tìm nước phù hợp…';
-    els.headline.textContent = isRed ? 'Nước tiếp theo để gây khó cho Liu DaHua' : 'Liu DaHua đang chuẩn bị phản đòn';
-    els.summary.textContent = isRed ? 'Wukong đã chọn một nước hợp lệ. Nhấn phân tích để biết vì sao nước này đáng đi.' : 'Hãy quan sát: phản ứng của bot sẽ hé lộ kế hoạch tiếp theo.';
-    els.confidence.textContent = detail.source === 'book' ? 'Khai cuộc' : 'Wukong';
-    els.curiosity.textContent = isRed ? 'Đi theo mũi tên, rồi AI sẽ chấm xem bạn có giữ được thế chủ động.' : 'Nước đáp trả sắp xuất hiện…';
+    setText(els.move, detail.move ? describeMove(detail.move) : 'Đang tìm nước phù hợp…');
+    setText(els.headline, isRed ? 'Nước tiếp theo để gây khó cho Liu DaHua' : 'Liu DaHua đang chuẩn bị phản đòn');
+    setText(els.summary, isRed ? 'Wukong đã chọn một nước hợp lệ. Nhấn phân tích để biết vì sao nước này đáng đi.' : 'Hãy quan sát: phản ứng của bot sẽ hé lộ kế hoạch tiếp theo.');
+    setText(els.confidence, detail.source === 'book' ? 'Khai cuộc' : 'Wukong');
+    setText(els.curiosity, isRed ? 'Đi theo mũi tên, rồi AI sẽ chấm xem bạn có giữ được thế chủ động.' : 'Nước đáp trả sắp xuất hiện…');
     setStatus('Wukong · ' + (detail.phaseLabel || detail.phase || 'đang phân tích'), 'ready');
   }
   function describeMove(move) {
@@ -194,7 +202,7 @@
     } catch (error) {
       if (error.name === 'AbortError') return;
       console.error('[AI Coach]', error); setStatus('Không gọi được AI Worker', 'error');
-      els.summary.textContent = 'Wukong vẫn hoạt động. Kiểm tra Worker URL, secret và CORS.';
+      setText(els.summary, 'Wukong vẫn hoạt động. Kiểm tra Worker URL, secret và CORS.');
       renderList(els.risks, [error.message], 'Kiểm tra cấu hình Worker.');
     } finally { setLoading(false); }
   }
@@ -208,24 +216,24 @@
     };
   }
   function renderAI(result) {
-    els.headline.textContent = result.headline || 'Kế hoạch cho nước tiếp theo';
-    els.summary.textContent = result.explanation || 'AI chưa cung cấp giải thích.';
+    setText(els.headline, result.headline || 'Kế hoạch cho nước tiếp theo');
+    setText(els.summary, result.explanation || 'AI chưa cung cấp giải thích.');
     renderList(els.strengths, result.strengths, 'Phát triển quân và giữ an toàn cho Tướng.');
     renderList(els.risks, result.risks, 'Theo dõi phản đòn trực tiếp.');
     renderList(els.plan, result.next_plan, 'Đi theo mũi tên rồi chờ phản ứng của bot.');
     const score = Math.max(0, Math.min(100, Number(result.score) || 70));
-    els.score.textContent = score + '/100'; els.scoreBar.style.width = score + '%';
-    els.momentum.textContent = result.momentum || 'cân bằng';
-    els.curiosity.textContent = result.curiosity || 'Nước đáp trả của Liu DaHua sẽ quyết định kế hoạch kế tiếp.';
-    els.confidence.textContent = result.confidence || 'trung bình';
+    setText(els.score, score + '/100'); if (els.scoreBar) els.scoreBar.style.width = score + '%';
+    setText(els.momentum, result.momentum || 'cân bằng');
+    setText(els.curiosity, result.curiosity || 'Nước đáp trả của Liu DaHua sẽ quyết định kế hoạch kế tiếp.');
+    setText(els.confidence, result.confidence || 'trung bình');
   }
-  function renderList(element, values, fallback) { const items = Array.isArray(values) && values.length ? values : [fallback]; element.innerHTML = items.slice(0,4).map(x => '<li>' + escapeHtml(String(x)) + '</li>').join(''); }
-  function setLoading(loading) { els.analyze.disabled = loading; els.analyze.textContent = loading ? 'AI đang suy nghĩ…' : 'AI phân tích nước này'; if (loading) setStatus('Đang hỏi Gemini qua Worker', 'loading'); }
-  function setStatus(text, kind) { els.status.textContent = text; els.status.dataset.kind = kind || ''; }
+  function renderList(element, values, fallback) { const items = Array.isArray(values) && values.length ? values : [fallback]; if (element) element.innerHTML = items.slice(0,4).map(x => '<li>' + escapeHtml(String(x)) + '</li>').join(''); }
+  function setLoading(loading) { if (els.analyze) { els.analyze.disabled = loading; setText(els.analyze, loading ? 'AI đang suy nghĩ…' : 'AI phân tích nước này'); } if (loading) setStatus('Đang hỏi Gemini qua Worker', 'loading'); }
+  function setStatus(text, kind) { if (!els.status) return; setText(els.status, text); els.status.dataset.kind = kind || ''; }
   async function copyGuidance() {
     const text = [els.headline.textContent, 'Gợi ý: '+els.move.textContent, 'Điểm kế hoạch: '+els.score.textContent, els.summary.textContent, 'Kế hoạch: '+Array.from(els.plan.querySelectorAll('li')).map(x=>x.textContent).join(' → ')].join('\n');
     try { await navigator.clipboard.writeText(text); toast('Đã sao chép hướng dẫn.'); } catch (_) { toast('Không thể sao chép.'); }
   }
-  function toast(message) { els.toast.textContent = message; els.toast.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>els.toast.classList.remove('show'),2200); }
+  function toast(message) { if (!els.toast) return; setText(els.toast, message); els.toast.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>els.toast && els.toast.classList.remove('show'),2200); }
   function escapeHtml(value) { return value.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
 })();

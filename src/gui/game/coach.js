@@ -53,7 +53,7 @@
   const elLegend = document.getElementById('coach-legend');
   const elBoardOverlay = document.getElementById('coach-board-overlay');
 
-  if (!elMinimap || !elCanvas || !elMoveLabel || !elLegend) {
+  if (!elMinimap || !elCanvas || !elMoveLabel || !elLegend || !elBoardOverlay) {
     console.warn('[Coach] UI not found. coach disabled.');
     return;
   }
@@ -424,6 +424,7 @@
     // Update phase status FIRST (fast + no need to wait for RAF)
     const phase = getGamePhase();
     const ui = phaseUi(phase);
+    if (!elLegend || !elMoveLabel) return;
     elLegend.textContent = 'Trạng thái: ' + ui.text;
     elLegend.style.color = ui.color;
     elLegend.style.fontWeight = '800';
@@ -500,7 +501,7 @@
           }
         }));
       } catch (e) {
-        elMoveLabel.textContent = '…';
+        if (elMoveLabel) elMoveLabel.textContent = '…';
       } finally {
         busy = false;
       }
