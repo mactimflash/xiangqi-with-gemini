@@ -119,3 +119,8 @@ Build output directory: .
 - Render bằng `DocumentFragment` và `replaceChildren()` để giảm layout/repaint.
 - Bổ sung focus state, touch target, reduced-motion và security headers.
 - Front-end không gọi AI trong lúc xem; chỉ đọc truyện đã cache từ D1.
+
+
+## D1 Web Console
+
+Xem `worker/D1_WEB_CONSOLE_GUIDE_VI.md`. Chạy `worker/schema-console.sql`, sau đó `worker/seeds.sql`.
