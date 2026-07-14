@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-label="兵">
+<defs><radialGradient id="g" cx="35%" cy="28%"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff1d0"/></radialGradient><filter id="s"><feDropShadow dx="0" dy="3" stdDeviation="2" flood-opacity=".25"/></filter></defs>
+<circle cx="50" cy="50" r="45" fill="#9e712f" filter="url(#s)"/><circle cx="50" cy="50" r="39" fill="url(#g)" stroke="#dcb66a" stroke-width="3"/><circle cx="50" cy="50" r="33" fill="none" stroke="#9e712f" stroke-opacity=".45" stroke-width="1.5"/>
+<text x="50" y="68" text-anchor="middle" font-family="STKaiti,KaiTi,serif" font-size="49" font-weight="700" fill="#b62e33">兵</text></svg>

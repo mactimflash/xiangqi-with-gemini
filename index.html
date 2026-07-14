@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
+  <meta name="theme-color" content="#f7f2e8" />
+  <meta name="description" content="Mô phỏng thế cờ nhanh, nhận gợi ý theo phong cách ra quyết định của Liễu Đại Hoa và lưu ván để Gemini phân tích sau." />
+  <title>Liễu Đại Hoa Coach</title>
+  <link rel="stylesheet" href="/assets/app.css?v=1" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">CỜ TƯỚNG THỰC CHIẾN</p>
+        <h1>Liễu Đại Hoa Coach</h1>
+      </div>
+      <button id="historyBtn" class="icon-btn" aria-label="Mở lịch sử">☰</button>
+    </header>
+
+    <main class="workspace">
+      <section class="game-card">
+        <div class="status-row">
+          <div class="side-pill"><span class="dot red"></span><span id="turnLabel">Đỏ đang đi</span></div>
+          <div class="speed-pill"><span id="engineState">Sẵn sàng</span></div>
+        </div>
+
+        <div id="boardWrap" class="board-wrap" aria-label="Bàn cờ tướng">
+          <svg class="board-lines" viewBox="0 0 800 900" aria-hidden="true">
+            <rect x="20" y="20" width="760" height="860" rx="18" fill="#f0d9a5" stroke="#7f5a34" stroke-width="5"/>
+            <g stroke="#79532e" stroke-width="3" fill="none">
+              <path d="M80 70H720M80 155H720M80 240H720M80 325H720M80 410H720M80 495H720M80 580H720M80 665H720M80 750H720M80 835H720"/>
+              <path d="M80 70V410M160 70V410M240 70V410M320 70V410M400 70V410M480 70V410M560 70V410M640 70V410M720 70V410"/>
+              <path d="M80 495V835M160 495V835M240 495V835M320 495V835M400 495V835M480 495V835M560 495V835M640 495V835M720 495V835"/>
+              <path d="M320 70L480 240M480 70L320 240M320 665L480 835M480 665L320 835"/>
+              <path d="M80 410V495M720 410V495"/>
+            </g>
+            <text x="245" y="468" font-size="42" font-family="serif" fill="#76502c" letter-spacing="12">楚 河</text>
+            <text x="505" y="468" font-size="42" font-family="serif" fill="#76502c" letter-spacing="12" text-anchor="middle">漢 界</text>
+          </svg>
+          <div id="piecesLayer" class="pieces-layer"></div>
+          <div id="selectionLayer" class="selection-layer" aria-hidden="true"></div>
+        </div>
+
+        <div class="coach-card" aria-live="polite">
+          <div class="coach-avatar">柳</div>
+          <div class="coach-copy">
+            <span class="coach-kicker">CÁCH LIỄU ĐẠI HOA SUY NGHĨ</span>
+            <strong id="suggestionTitle">Chạm một quân để bắt đầu mô phỏng</strong>
+            <p id="suggestionText">Sau mỗi nước, hệ thống sẽ tự tìm phương án thực dụng, ưu tiên thế chắc, phản công và khả năng ép đối thủ sai lầm.</p>
+          </div>
+        </div>
+
+        <div class="primary-actions">
+          <button id="undoBtn" class="action secondary">↶ Đi lại</button>
+          <button id="hintBtn" class="action primary">✦ Gợi ý ngay</button>
+          <button id="saveBtn" class="action save">Lưu ván</button>
+        </div>
+
+        <div class="quick-actions">
+          <button id="newBtn">Ván mới</button>
+          <button id="setupBtn">Xếp thế cờ</button>
+          <button id="flipBtn">Lật bàn</button>
+        </div>
+      </section>
+
+      <aside class="insight-panel">
+        <div class="panel-head">
+          <div>
+            <p class="eyebrow">NHẬT KÝ QUYẾT ĐỊNH</p>
+            <h2>Vì sao nên đi như vậy?</h2>
+          </div>
+          <span id="moveCount" class="count-badge">0 nước</span>
+        </div>
+        <div id="decisionFeed" class="decision-feed">
+          <div class="empty-state">Các quyết định sẽ xuất hiện tại đây sau khi bạn bắt đầu di chuyển quân.</div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="setupDialog" class="sheet-dialog">
+    <form method="dialog" class="sheet-card">
+      <div class="sheet-head"><h2>Xếp thế cờ thật nhanh</h2><button value="cancel" aria-label="Đóng">×</button></div>
+      <p>Chọn quân, sau đó chạm vào giao điểm cần đặt. Chạm lại quân đang có để xóa.</p>
+      <div id="palette" class="piece-palette"></div>
+      <div class="setup-options">
+        <label>Bên đi trước
+          <select id="setupSide"><option value="red">Đỏ</option><option value="black">Đen</option></select>
+        </label>
+        <button id="clearSetup" type="button" class="danger-outline">Xóa bàn</button>
+      </div>
+      <button id="applySetup" value="default" class="action primary full">Dùng thế cờ này</button>
+    </form>
+  </dialog>
+
+  <dialog id="historyDialog" class="history-dialog">
+    <div class="history-card">
+      <div class="sheet-head"><div><p class="eyebrow">KHO VÁN ĐÃ LƯU</p><h2>Xem lại và học từ chính mình</h2></div><button id="closeHistory" aria-label="Đóng">×</button></div>
+      <div id="historyList" class="history-list"><div class="empty-state">Đang tải lịch sử…</div></div>
+    </div>
+  </dialog>
+
+  <dialog id="reviewDialog" class="review-dialog">
+    <div class="review-card">
+      <div class="sheet-head"><div><p class="eyebrow">PHÂN TÍCH SAU VÁN</p><h2 id="reviewTitle">Ván cờ của bạn</h2></div><button id="closeReview" aria-label="Đóng">×</button></div>
+      <div id="reviewContent" class="review-content"></div>
+    </div>
+  </dialog>
+
+  <div id="toast" class="toast" role="status"></div>
+
+  <script src="/src/wukong.js?v=1"></script>
+  <script src="/src/app.js?v=1"></script>
+</body>
+</html>
