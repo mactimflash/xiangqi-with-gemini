@@ -110,3 +110,12 @@ Build output directory: .
 - Toàn bộ trang khóa trong `100dvh`: bàn cờ và phần diễn biến cùng xuất hiện trên một màn hình.
 - Mobile dùng bố cục 60/40; không cuộn toàn trang. Nội dung dài được rút gọn theo thẻ để giữ bàn cờ luôn trong tầm nhìn.
 - Desktop hiển thị bàn cờ và câu chuyện song song.
+
+
+## Production UI v6
+
+- Đã loại bỏ hoàn toàn lớp SVG overlay, vòng tròn và mũi tên trên bàn cờ.
+- Bàn cờ chỉ render quân cờ SVG, giảm số node SVG và thao tác DOM ở mỗi nước.
+- Render bằng `DocumentFragment` và `replaceChildren()` để giảm layout/repaint.
+- Bổ sung focus state, touch target, reduced-motion và security headers.
+- Front-end không gọi AI trong lúc xem; chỉ đọc truyện đã cache từ D1.

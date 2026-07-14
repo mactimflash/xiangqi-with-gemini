@@ -9,8 +9,47 @@ function initialBoard(){const b={};'rnbakabnr'.split('').forEach((p,f)=>b[`${Str
 function applyMove(board,m){const n={...board},from=m.slice(0,2),to=m.slice(2,4);if(n[from]){n[to]=n[from];delete n[from]}return n}
 function buildStates(){states=[{board:initialBoard(),move:null,captured:null}];let b=states[0].board;for(const m of game.moves){const captured=b[m.slice(2,4)]||null;b=applyMove(b,m);states.push({board:b,move:m,captured})}}
 function pct(file,rank){return{x:(file/8)*100,y:((9-rank)/9)*100}}
-function renderBoard(){const board=$('board');board.innerHTML='<div class="river"><span>楚 河</span><span>漢 界</span></div><div class="palace top"></div><div class="palace bottom"></div>';const state=states[index];for(const [sq,p] of Object.entries(state.board)){const f=sq.charCodeAt(0)-97,r=Number(sq[1]),pos=pct(f,r),el=document.createElement('div'),img=document.createElement('img');el.className=`piece ${p===p.toUpperCase()?'red':'black'}`;el.style.left=pos.x+'%';el.style.top=pos.y+'%';el.title=(p===p.toUpperCase()?'Đỏ ':'Đen ')+names[p];img.src=`/assets/pieces/${pieceAssets[p]}.svg`;img.alt=el.title;img.draggable=false;el.appendChild(img);board.appendChild(el)}drawOverlay()}
-function drawOverlay(){const svg=$('overlay');svg.innerHTML='';if(!states[index]?.move)return;const m=states[index].move,a=pct(m.charCodeAt(0)-97,Number(m[1])),b=pct(m.charCodeAt(2)-97,Number(m[3]));svg.innerHTML=`<defs><marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L10,5 L0,10 z" fill="#d5961b"/></marker></defs><circle class="move-ring from" cx="${a.x*9}" cy="${a.y*10}" r="30"/><line class="move-arrow" x1="${a.x*9}" y1="${a.y*10}" x2="${b.x*9}" y2="${b.y*10}" marker-end="url(#arrow)"/><circle class="move-ring to" cx="${b.x*9}" cy="${b.y*10}" r="30"/>`}
+function renderBoard(){
+  const board=$('board');
+  const state=states[index];
+  const fragment=document.createDocumentFragment();
+
+  const river=document.createElement('div');
+  river.className='river';
+  river.innerHTML='<span>楚 河</span><span>漢 界</span>';
+  fragment.appendChild(river);
+
+  for(const position of ['top','bottom']){
+    const palace=document.createElement('div');
+    palace.className=`palace ${position}`;
+    fragment.appendChild(palace);
+  }
+
+  for(const [sq,pieceCode] of Object.entries(state.board)){
+    const file=sq.charCodeAt(0)-97;
+    const rank=Number(sq[1]);
+    const pos=pct(file,rank);
+    const piece=document.createElement('div');
+    const image=document.createElement('img');
+    const side=pieceCode===pieceCode.toUpperCase()?'Đỏ':'Đen';
+
+    piece.className=`piece ${side==='Đỏ'?'red':'black'}`;
+    piece.style.left=`${pos.x}%`;
+    piece.style.top=`${pos.y}%`;
+    piece.title=`${side} ${names[pieceCode]}`;
+
+    image.src=`/assets/pieces/${pieceAssets[pieceCode]}.svg`;
+    image.alt=piece.title;
+    image.width=96;
+    image.height=96;
+    image.decoding='async';
+    image.draggable=false;
+    piece.appendChild(image);
+    fragment.appendChild(piece);
+  }
+
+  board.replaceChildren(fragment);
+}
 function friendlyMove(){if(index===0)return'';const m=states[index].move,p=states[index-1].board[m.slice(0,2)];if(!p)return'Một nước cờ mới vừa diễn ra';const side=p===p.toUpperCase()?'Đỏ':'Đen',fr=Number(m[1]),tr=Number(m[3]);let action;if(fr===tr)action='đi ngang';else if(names[p]==='Mã')action='nhảy sang điểm mới';else if(names[p]==='Tượng')action='đi chéo';else{const forward=side==='Đỏ'?tr>fr:tr<fr;action=forward?'tiến lên':'lùi về'}return `${side} đưa ${names[p]} ${action}`}
 function chapter(){if(index===0)return'LỜI MỞ ĐẦU';const r=index/game.moves.length;if(r<.18)return'CHƯƠNG 1 · DÒ ĐƯỜNG';if(r<.38)return'CHƯƠNG 2 · TRANH QUYỀN CHỦ ĐỘNG';if(r<.62)return'CHƯƠNG 3 · GIẰNG CO';if(r<.84)return'CHƯƠNG 4 · BƯỚC NGOẶT';return'CHƯƠNG CUỐI · ĐỊNH ĐOẠT'}
 function fallbackStory(mode){if(mode==='intro')return{chapter:'LỜI MỞ ĐẦU',headline:`${game.red} đối đầu ${game.black}`,narration:`Ván đấu tại ${game.event||'một kỳ đài nổi tiếng'}. Hãy theo dõi cách hai bên giành quyền chủ động từ những nước đầu tiên.`,intent:'Đỏ sẽ đặt câu hỏi đầu tiên trên bàn cờ.',opponent_dilemma:'Đen cần chọn cách nhập cuộc phù hợp để không bị cuốn theo.',lessons:['Quan sát quân nào được phát triển trước.','Đừng chỉ nhìn nước đi; hãy nhìn đường quân vừa được mở.'],next_hook:'Nước đầu tiên sẽ hé lộ phong cách nhập cuộc nào?'};
