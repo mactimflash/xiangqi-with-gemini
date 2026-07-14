@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+  <meta name="theme-color" content="#a84335">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Danh Cục Kỳ Truyện</title>
+  <link rel="stylesheet" href="/assets/app.css?v=5">
+</head>
+<body>
+  <div class="app-frame">
+    <header class="app-header">
+      <div class="brand-mark">棋</div>
+      <div class="brand-copy">
+        <span class="eyebrow">DANH CỤC KỲ TRUYỆN</span>
+        <h1 id="gameTitle">Đang tải danh cục…</h1>
+      </div>
+      <button id="libraryBtn" class="library-btn" aria-label="Chọn ván cờ"><span>Thư viện</span><b>⌄</b></button>
+    </header>
+
+    <main class="app-shell">
+      <section class="game-column" aria-label="Bàn cờ và điều khiển">
+        <div class="match-card">
+          <div class="match-topline">
+            <div class="player-compact black-side">
+              <span class="mini-piece black">將</span>
+              <div><small>QUÂN ĐEN</small><strong id="blackPlayer">Đen</strong></div>
+              <span class="turn-dot" id="blackTurn">Chờ</span>
+            </div>
+            <div class="match-meta">
+              <span id="gameEvent"></span>
+              <b id="cacheBadge">Đang tải truyện…</b>
+            </div>
+          </div>
+
+          <div class="board-card">
+            <div class="board-wrap">
+              <div id="board" class="board" aria-label="Bàn cờ tướng"></div>
+              <svg id="overlay" class="overlay" viewBox="0 0 900 1000" aria-hidden="true"></svg>
+            </div>
+          </div>
+
+          <div class="match-bottomline">
+            <div class="player-compact red-side">
+              <span class="mini-piece red">帥</span>
+              <div><small>QUÂN ĐỎ</small><strong id="redPlayer">Đỏ</strong></div>
+              <span class="turn-dot active" id="redTurn">Đang đi</span>
+            </div>
+            <div class="move-progress">
+              <span id="moveCount">Bắt đầu</span>
+              <div class="progress"><i id="progressBar"></i></div>
+              <span id="sideTurn">Đỏ đi</span>
+            </div>
+          </div>
+
+          <div class="board-tools" aria-label="Điều khiển ván cờ">
+            <button id="prev" class="tool-btn" aria-label="Nước trước"><span>‹</span><small>Trước</small></button>
+            <button id="autoPlay" class="tool-btn auto-play" aria-label="Tự động phát" disabled><span id="playIcon">▶</span><small id="playLabel">Tự động</small></button>
+            <button id="next" class="tool-btn tool-primary" aria-label="Nước tiếp theo"><span>›</span><small>Tiếp</small></button>
+          </div>
+          <div class="playback-strip">
+            <button id="restart" class="restart-link">↶ Xem lại</button>
+            <label>Tốc độ <select id="playSpeed"><option value="1.25">Chậm</option><option value="1" selected>Vừa</option><option value="0.72">Nhanh</option></select></label>
+          </div>
+        </div>
+      </section>
+
+      <aside class="story-panel" aria-label="Diễn biến và phân tích">
+        <div class="story-head">
+          <div class="chapter-tag" id="chapterTag">LỜI MỞ ĐẦU</div>
+          <div class="ai-live"><i></i><span id="aiState">Bản truyện đã lưu</span></div>
+        </div>
+        <div class="story-main">
+          <h2 id="headline">Một cuộc đấu trí đang chờ được mở ra</h2>
+          <p id="narration" class="lead">Mỗi nước cờ mở ra một đoạn mới trong câu chuyện.</p>
+        </div>
+
+        <div class="insight-grid">
+          <article class="insight-card intent-card">
+            <span class="card-icon">◎</span>
+            <div><h3>Ý đồ</h3><p id="intent">Hai bên chưa bộc lộ kế hoạch.</p></div>
+          </article>
+          <article class="insight-card dilemma-card">
+            <span class="card-icon">⚑</span>
+            <div><h3>Thế khó</h3><p id="dilemma">Quan sát cách hai bên bố trí lực lượng.</p></div>
+          </article>
+          <article class="insight-card lesson compact-lesson">
+            <span class="card-icon">✦</span>
+            <div><h3>Bài học</h3><ul id="lessons"><li>Đoán nước tiếp theo để luyện tư duy.</li></ul></div>
+          </article>
+          <article class="insight-card hook-card">
+            <span class="card-icon">?</span>
+            <div><h3>Điều đáng chờ</h3><p id="nextHook">Ai sẽ giành quyền chủ động trước?</p></div>
+          </article>
+        </div>
+
+        <div id="ending" class="ending hidden">
+          <span class="ending-label">KẾT CỤC</span>
+          <h3 id="endingTitle"></h3>
+          <p id="endingText"></p>
+          <small id="endingConfidence"></small>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <dialog id="library">
+    <form method="dialog" class="library-card">
+      <div class="library-head">
+        <div><span class="eyebrow">THƯ VIỆN</span><h2>Chọn danh cục muốn khám phá</h2></div>
+        <button class="close" aria-label="Đóng">×</button>
+      </div>
+      <div class="filters">
+        <input id="search" placeholder="Tìm kỳ thủ hoặc giải đấu…">
+        <select id="sourceFilter"><option value="all">Tất cả nguồn</option></select>
+      </div>
+      <div id="gameList" class="game-list"></div>
+    </form>
+  </dialog>
+
+  <script type="module" src="/src/app.js?v=5"></script>
+</body>
+</html>
