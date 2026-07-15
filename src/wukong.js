@@ -1693,6 +1693,7 @@ var Engine = function() {
       getPiece: function(square) { return board[square]; },
       getSide: function() { return side; },
       getSixty: function() { return sixty; },
+      evaluate: function() { return evaluate(); },
       resetSearchPly: function() { searchPly = 0; },
       generateLegalMoves: function() { return generateLegalMoves(); },
       isRepetition: function() { return isRepetition(); },

@@ -4,9 +4,9 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no" />
   <meta name="theme-color" content="#f7f2e8" />
-  <meta name="description" content="Mô phỏng thế cờ nhanh, nhận gợi ý theo phong cách ra quyết định của Liễu Đại Hoa và lưu ván để Gemini phân tích sau." />
-  <title>Liễu Đại Hoa Coach</title>
-  <link rel="stylesheet" href="/assets/app.css?v=2" />
+  <meta name="description" content="Đấu với bot mô phỏng phong cách Liễu Đại Hoa và biến chính sai lầm của bạn thành bài tập ôn luyện." />
+  <title>Liễu Đại Hoa AI Coach</title>
+  <link rel="stylesheet" href="/assets/app.css?v=3" />
   <link rel="preload" href="/assets/pieces/red-pawn.svg?v=2" as="image" type="image/svg+xml" />
   <link rel="preload" href="/assets/pieces/red-advisor.svg?v=2" as="image" type="image/svg+xml" />
   <link rel="preload" href="/assets/pieces/red-elephant.svg?v=2" as="image" type="image/svg+xml" />
@@ -26,7 +26,7 @@
   <div class="app-shell">
     <header class="topbar">
       <div>
-        <p class="eyebrow">CỜ TƯỚNG THỰC CHIẾN</p>
+        <p class="eyebrow">AI KỲ SƯ CÁ NHÂN</p>
         <h1>Liễu Đại Hoa Coach</h1>
       </div>
       <button id="historyBtn" class="icon-btn" aria-label="Mở lịch sử">☰</button>
@@ -37,6 +37,39 @@
         <div class="status-row">
           <div class="side-pill"><span class="dot red"></span><span id="turnLabel">Đỏ đang đi</span></div>
           <div class="speed-pill"><span id="engineState">Sẵn sàng</span></div>
+        </div>
+
+        <div class="play-settings" aria-label="Thiết lập đấu bot">
+          <label>Bạn cầm
+            <select id="userSideSelect">
+              <option value="red">Đỏ</option>
+              <option value="black">Đen</option>
+            </select>
+          </label>
+          <label>Độ sâu
+            <select id="difficultySelect">
+              <option value="quick">Nhanh</option>
+              <option value="standard" selected>Thực chiến</option>
+              <option value="deep">Sâu</option>
+            </select>
+          </label>
+          <label class="switch-label">
+            <input id="botToggle" type="checkbox" checked />
+            <span>Liễu tự đi</span>
+          </label>
+          <button id="exerciseBtn" class="exercise-shortcut">Ôn lỗi <span id="exerciseBadge">0</span></button>
+        </div>
+
+        <div id="exerciseBar" class="exercise-bar" hidden>
+          <div>
+            <span class="coach-kicker">BÀI TẬP TỪ SAI LẦM CỦA BẠN</span>
+            <strong id="exerciseTitle">Hãy tìm nước tốt hơn</strong>
+            <p id="exerciseText">Bạn chỉ có một lần đi. Hãy chọn phương án mà lần trước bạn đã bỏ lỡ.</p>
+          </div>
+          <div class="exercise-actions">
+            <button id="nextExerciseBtn" hidden>Bài tiếp</button>
+            <button id="exitExerciseBtn">Thoát</button>
+          </div>
         </div>
 
         <div id="boardWrap" class="board-wrap" aria-label="Bàn cờ tướng">
@@ -59,9 +92,9 @@
         <div class="coach-card" aria-live="polite">
           <div class="coach-avatar">柳</div>
           <div class="coach-copy">
-            <span class="coach-kicker">CÁCH LIỄU ĐẠI HOA SUY NGHĨ</span>
-            <strong id="suggestionTitle">Chạm một quân để bắt đầu mô phỏng</strong>
-            <p id="suggestionText">Sau mỗi nước, hệ thống sẽ tự tìm phương án thực dụng, ưu tiên thế chắc, phản công và khả năng ép đối thủ sai lầm.</p>
+            <span class="coach-kicker">GÓC NHÌN MÔ PHỎNG LIỄU ĐẠI HOA</span>
+            <strong id="suggestionTitle">Bạn cầm Đỏ, hãy đi nước đầu tiên</strong>
+            <p id="suggestionText">Bot sẽ tự đáp lại. Mỗi nước của bạn được đối chiếu với phương án tốt hơn để tạo bài tập ôn lỗi.</p>
           </div>
         </div>
 
@@ -75,6 +108,7 @@
           <button id="newBtn">Ván mới</button>
           <button id="setupBtn">Xếp thế cờ</button>
           <button id="flipBtn">Lật bàn</button>
+          <button id="practiceBtn">Luyện sai lầm</button>
         </div>
       </section>
 
@@ -82,9 +116,13 @@
         <div class="panel-head">
           <div>
             <p class="eyebrow">NHẬT KÝ QUYẾT ĐỊNH</p>
-            <h2>Vì sao nên đi như vậy?</h2>
+            <h2>Học từ từng nước đi</h2>
           </div>
           <span id="moveCount" class="count-badge">0 nước</span>
+        </div>
+        <div class="learning-summary">
+          <div><span>Sai lầm đã phát hiện</span><strong id="mistakeCount">0</strong></div>
+          <div><span>Bài cần ôn</span><strong id="dueCount">0</strong></div>
         </div>
         <div id="decisionFeed" class="decision-feed">
           <div class="empty-state">Các quyết định sẽ xuất hiện tại đây sau khi bạn bắt đầu di chuyển quân.</div>
@@ -124,7 +162,7 @@
 
   <div id="toast" class="toast" role="status"></div>
 
-  <script src="/src/wukong.js?v=2"></script>
-  <script src="/src/app.js?v=2"></script>
+  <script src="/src/wukong.js?v=3"></script>
+  <script src="/src/app.js?v=3"></script>
 </body>
 </html>
